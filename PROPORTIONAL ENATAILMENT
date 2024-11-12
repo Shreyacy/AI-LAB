@@ -1,0 +1,56 @@
+import itertools
+
+# Define symbols in the KB and query
+symbols = ['A', 'B', 'C']
+
+# Define the Knowledge Base (KB) as separate components
+A_or_C = lambda A, B, C: A or C
+B_or_not_C = lambda A, B, C: B or not C
+
+# Combine the components to define KB
+KB = lambda A, B, C: A_or_C(A, B, C) and B_or_not_C(A, B, C)
+
+# Define the Query (alpha)
+query = lambda A, B, C: A or B
+
+# Function to print the truth tables
+def print_truth_tables(symbols, A_or_C, B_or_not_C, KB, query):
+    # Full truth table
+    print(f"{'A':<6}{'B':<6}{'C':<6}{'A∨C':<8}{'B∨¬C':<8}{'KB':<8}{'α (A∨B)':<8}")
+    print("-" * 56)
+
+    # List to store combinations where both KB and α are true
+    both_true = []
+
+    # Generate all possible truth assignments for symbols
+    for values in itertools.product([False, True], repeat=len(symbols)):
+        # Create a dictionary for the current truth assignment
+        assignment = dict(zip(symbols, values))
+
+        # Evaluate each part of the table based on the current assignment
+        A_val = assignment['A']
+        B_val = assignment['B']
+        C_val = assignment['C']
+        A_or_C_val = A_or_C(A_val, B_val, C_val)
+        B_or_not_C_val = B_or_not_C(A_val, B_val, C_val)
+        KB_val = KB(A_val, B_val, C_val)
+        query_val = query(A_val, B_val, C_val)
+
+        # Print each row of the truth table
+        print(f"{str(A_val):<6}{str(B_val):<6}{str(C_val):<6}"
+              f"{str(A_or_C_val):<8}{str(B_or_not_C_val):<8}"
+              f"{str(KB_val):<8}{str(query_val):<8}")
+
+        # Store combinations where both KB and α are true
+        if KB_val and query_val:
+            both_true.append(assignment)
+
+    # Table for combinations where both KB and α are true
+    print("\nCombinations where both KB and α (A∨B) are true:")
+    print(f"{'A':<6}{'B':<6}{'C':<6}")
+    print("-" * 18)
+    for assignment in both_true:
+        print(f"{assignment['A']:<6}{assignment['B']:<6}{assignment['C']:<6}")
+
+# Run the function to print the truth tables
+print_truth_tables(symbols, A_or_C, B_or_not_C, KB, query)
